@@ -1,12 +1,16 @@
 [package]
 name = "crypto-rust"
 version = "0.1.0"
+authors = ["Loïs L. <loislag@outlook.fr>"]
+description = "A simple rust CLI application to print datas about cryptocurrency stuff"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/SailorSnoW/crypto-rust"
+keywords = ["cli", "cryptocurrency", "data"]
+categories = ["command-line-utilities"]
 edition = "2021"
 
 [lib]
 path="src/lib.rs"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 reqwest = "0.11.9"
