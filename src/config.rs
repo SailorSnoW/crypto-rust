@@ -7,7 +7,6 @@ use io::Write;
 use io::ErrorKind;
 
 use crate::checker;
-use checker::checker_error;
 
 use serde::{Serialize, Deserialize};
 
@@ -59,18 +58,7 @@ fn read_config() -> Result<Config, Box<dyn error::Error>> {
     println!("Please enter your CMC API Key:");
     stdin.read_line(&mut buffer)?;
 
-    match checker::verify_cmc_api_key_format(&buffer) {
-        Ok(()) => return Ok(Config { api_key: buffer}),
-        Err(e) => {
-            match e {
-                checker_error::Error::ApiKeyFormatError => {
-                    println!("{}", e);
-                    return Ok(Config::default());
-                }
-                _ => return Err(e.into())
-            }
-        }
-    }
+    return Ok(Config {api_key: buffer});
 }
 
 fn write_config(c: &Config) -> io::Result<()> {
