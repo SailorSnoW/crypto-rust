@@ -6,6 +6,8 @@ use crypto_rust::fetcher;
 use crypto_rust::{checker, config};
 
 fn main() -> Result<(), Box<dyn error::Error>> {
+    human_panic::setup_panic!();
+
     // Proccessing parameters (currencies)
     let parameters: Vec<String> = env::args().collect();
     let command: &String = &parameters[1];
