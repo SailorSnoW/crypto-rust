@@ -1,59 +1,53 @@
-use std::env;
 use std::error;
 
-use crypto_rust::utils;
-use crypto_rust::fetcher;
-use crypto_rust::{checker, config};
+use clap::StructOpt;
+
+use crypto_rust::{
+    checker,
+    config,
+    fetcher,
+    utils,
+    commands::Commands
+};
 
 fn main() -> Result<(), Box<dyn error::Error>> {
     human_panic::setup_panic!();
 
-    // Proccessing parameters (currencies)
-    let parameters: Vec<String> = env::args().collect();
-    let command: &String = &parameters[1];
+    let args = Commands::parse();
 
-    match command.as_str() {
-        // print the list of available commands
-        "help" => {
-            println!("Available commands:\n price - get the market price of the specified cuurrencies pair")
+    match args.price {
+        Some(currencies) => {
+            let currencies_upped = currencies.into_iter().map(|c| c.to_uppercase()).collect::<Vec<String>>();
+
+            checker::verify_currency_format(&currencies_upped[0])?;
+            checker::verify_currency_format(&currencies_upped[1])?;
+            
+            price(currencies_upped)?;   
+            return Ok(()); 
         }
-        // get the market price of a given pair
-        "price" => {
-            // parameters check
-            let currencies = checker::params_for_price(parameters);
-            match currencies {
-                Ok(c) => pair_price(c)?,
-                Err(e) => {
-                    println!("{}", e);
-                    return Err(e.into());
-                }
-            }
-        }
-        _ => {
-            println!("Unknown command. Type '{} help' to get a list of commands.", env!("CARGO_PKG_NAME"));
-        }
+        None => ()
     }
-
+    
     return Ok(());
 }
 
-pub fn pair_price(
-    currencies: (String, String)
+pub fn price(
+    currencies: Vec<String>
 ) -> Result<(), Box<dyn error::Error>> {
     // Proccessing api key (config file)
     let config: config::Config = config::load_config()?;
 
     // get the pair market price of 'first_currency'/'second_currency'
     let pair_price = fetcher::get_pair_price(
-        &currencies.0,
-        &currencies.1,
+        &currencies[0],
+        &currencies[1],
         config.api_key
     )?;
 
     println!(
         "Current {}/{} market price: {}$",
-        currencies.0,
-        currencies.1,
+        currencies[0],
+        currencies[1],
         utils::format_price(pair_price)
     );
 
