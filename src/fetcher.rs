@@ -1,6 +1,8 @@
 use std::{error::Error};
 use serde_json::Value;
 
+use crate::utils;
+
 mod cmc_requests;
 
 #[tokio::main(flavor = "current_thread")]
@@ -23,15 +25,8 @@ pub async fn get_pair_price(
     let currency2_price_optionnal = &response_jsonify["data"][currency2]["quote"]["USD"]["price"].as_f64();
 
     return Ok(
-        compute_pair_price(
+        utils::compute_pair_price(
             currency1_price_optionnal.expect("Price error"),
             currency2_price_optionnal.expect("Price error"))
     )
-}
-
-fn compute_pair_price(
-    currency1_price: f64,
-    currency2_price: f64
-) -> f64 {
-    return currency1_price / currency2_price;
 }
