@@ -3,7 +3,8 @@ use serde_json::Value;
 
 mod cmc_requests;
 
-pub fn get_pair_price(
+#[tokio::main(flavor = "current_thread")]
+pub async fn get_pair_price(
     currency1: &String,
     currency2: &String,
     api_key: String
@@ -14,11 +15,7 @@ pub fn get_pair_price(
     parsed_currencies.push_str(currency2);
 
 
-    let future_response = cmc_requests::get_currencies_market_data(parsed_currencies, api_key);
-
-    let rt = tokio::runtime::Runtime::new().unwrap();
-    let response = rt.block_on(future_response)?;
-
+    let response = cmc_requests::get_currencies_market_data(parsed_currencies, api_key).await?;
 
     let response_jsonify: Value = serde_json::from_str(&response)?;
 
