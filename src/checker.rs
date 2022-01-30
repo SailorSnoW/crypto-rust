@@ -6,7 +6,7 @@ pub mod checker_error {
 
     #[derive(Error, Debug)]
     pub enum Error {        
-        #[error("Invalid currency format for \"{currency}\".\nCurrency should be only composed of letters with a length of 3 or 4 characters.")]
+        #[error("Invalid currency format for \"{currency}\".\nCurrency should be only composed of letters with a length of 3 or 4 characters.\n")]
         CurrencyFormatError {
             currency: String
         },
@@ -22,6 +22,7 @@ pub fn verify_cmc_api_key_format(api_key: &String) -> Result<(), Error> {
     ).unwrap();
 
     if !api_key_regex.is_match(api_key) {
+        eprintln!("{}", Error::ApiKeyFormatError.to_string());
         return Err(Error::ApiKeyFormatError);
     }
     else {
@@ -33,7 +34,9 @@ pub fn verify_currency_format(currency: &String) -> Result<(), Error> {
     let currency_regex = Regex::new(r"^[A-Z]{3,4}$").unwrap();
 
     if !currency_regex.is_match(currency) {
-        return Err(Error::CurrencyFormatError{currency: String::from(currency)});
+        let throwed_error = Error::CurrencyFormatError{currency: String::from(currency)};
+        eprintln!("{}", throwed_error.to_string());
+        return Err(throwed_error);
     }
     else { 
         return Ok(());
