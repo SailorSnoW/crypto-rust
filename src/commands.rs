@@ -7,9 +7,18 @@ pub struct Commands {
         short,
         long,
         multiple_values(true),
-        value_names(&["Currency 1", "Currency 2"]),
+        value_names(&["CURRENCY 1", "CURRENCY 2"]),
         number_of_values(2),
         help("get the actual market price of the given currencies pair"),
     )]
     pub price: Option<Vec<String>>,
+
+    #[clap(
+        short,
+        long,
+        multiple_values(true),
+        value_name("CURRENCY"),
+        help("get informations about the given currencies")
+    )]
+    pub info: Option<Vec<String>>,
 }
