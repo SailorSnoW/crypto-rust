@@ -17,14 +17,35 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 
     match args.price {
         Some(currencies) => {
-            let currencies_upped = currencies.into_iter().map(|c| c.to_uppercase()).collect::<Vec<String>>();
+            let currencies_upped = currencies.into_iter().map(|c| {
+                let c_upped = c.to_uppercase();
+                match checker::verify_currency_format(&c_upped) {
+                    Ok(()) => return Ok(c_upped),
+                    Err(e) => return Err(e)
+                }
+            }).collect::<Result<Vec<String>, checker::checker_error::Error>>()?;
 
             checker::verify_currency_format(&currencies_upped[0])?;
             checker::verify_currency_format(&currencies_upped[1])?;
-            
+
             price(currencies_upped)?;   
             return Ok(()); 
-        }
+        },
+        None => ()
+    }
+
+    match args.info {
+        Some(currencies) => {
+            let currencies_upped = currencies.into_iter().map(|c| {
+                let c_upped = c.to_uppercase();
+                match checker::verify_currency_format(&c_upped) {
+                    Ok(()) => return Ok(c_upped),
+                    Err(e) => return Err(e)
+                }
+            }).collect::<Result<Vec<String>, checker::checker_error::Error>>()?;
+
+            println!("currencies: {:?}", currencies_upped);
+        },
         None => ()
     }
     
@@ -50,6 +71,13 @@ pub fn price(
         currencies[1],
         utils::format_price(pair_price)
     );
+
+    return Ok(());
+}
+
+pub fn informations() -> Result<(), Box<dyn error::Error>> {
+    // Proccessing api key (config file)
+    let config: config::Config = config::load_config()?;
 
     return Ok(());
 }
