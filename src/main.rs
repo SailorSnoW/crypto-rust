@@ -4,7 +4,6 @@ use clap::StructOpt;
 
 use crypto_rust::{
     checker,
-    config,
     fetcher,
     utils,
     commands::Commands
@@ -44,7 +43,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
                 }
             }).collect::<Result<Vec<String>, checker::checker_error::Error>>()?;
 
-            println!("currencies: {:?}", currencies_upped);
+            informations(currencies_upped)?;
         },
         None => ()
     }
@@ -55,14 +54,10 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 pub fn price(
     currencies: Vec<String>
 ) -> Result<(), Box<dyn error::Error>> {
-    // Proccessing api key (config file)
-    let config: config::Config = config::load_config()?;
-
     // get the pair market price of 'first_currency'/'second_currency'
-    let pair_price = fetcher::get_pair_price(
+    let pair_price = fetcher::pair_price(
         &currencies[0],
         &currencies[1],
-        config.api_key
     )?;
 
     println!(
@@ -75,9 +70,12 @@ pub fn price(
     return Ok(());
 }
 
-pub fn informations() -> Result<(), Box<dyn error::Error>> {
-    // Proccessing api key (config file)
-    let config: config::Config = config::load_config()?;
+pub fn informations(currencies: Vec<String>) -> Result<(), Box<dyn error::Error>> {
+    let informations = fetcher::currencies_information(currencies)?;
+    
+    for currency_informations in informations {
+        println!("{}", currency_informations);
+    }
 
     return Ok(());
 }
