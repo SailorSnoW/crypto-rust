@@ -26,11 +26,53 @@ impl fmt::Display for CurrencyInfos {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "\nCurrency: {name} ({symbol})\n{name} is a {category}.\n",
+            "{}",
+            self.text_constructor()
+        )
+    }
+}
+
+impl CurrencyInfos {
+    fn text_constructor(&self) -> String {
+        let mut return_string = String::new();
+
+        return_string.push_str(
+           format!(
+            "\nCurrency: {name} ({symbol})\n{name} is a {category}.",
             name = self.name,
             symbol = self.symbol,  
             category = self.category
-        )
+           ).as_str()
+        );
+
+        match &self.date_launched {
+            Some(date) => {
+                return_string.push_str(
+                    format!(
+                     "\nWas launched the {}",
+                     date
+                    ).as_str()
+                 );
+            }
+            None => ()
+        }
+
+        if self.tags.len() > 0 {
+            return_string.push_str("\nTagged with: ");
+            for (index, tag) in self.tags.iter().enumerate() {
+                if index != 0 {
+                    return_string.push_str(", ");
+                }
+                return_string.push_str(
+                    format!(
+                        "{}",
+                        tag
+                    ).as_str()
+                )
+            }
+        }
+
+        return return_string;
     }
 }
 
